@@ -39,7 +39,7 @@ class LightsensorTest(unittest.TestCase):
     
     def test_change_parameter(self):
         rospy.set_param('lightsensors_freq', 1)
-        test.sleep(2)
+        time.sleep(2)
         c_prev = self.count
         time.sleep(3)
         self.assertTrue((self.count < (c_prev + 4)), "freq does not change")
