@@ -17,24 +17,27 @@ if __name__ == '__main__':
     rospy.init_node('lightsensors')
     pub = rospy.Publisher('lightsensors', LightSensorValues, queue_size=1)
     
+    is_enable = rospy.get_param("lightsensors_enable", True)
     freq = get_freq()
     rate = rospy.Rate(freq)
     while not rospy.is_shutdown():
-        try:
-            with open(devfile, 'r') as f:
-                data = f.readline().split()
-                data = [ int(e) for e in data ]
-                d = LightSensorValues()
-                d.right_forward = data[0]
-                d.right_side = data[1]
-                d.left_side = data[2]
-                d.left_forward = data[3]
-                d.sum_all = sum(data)
-                d.sum_forward = data[0] + data[3]
-                pub.publish(d)
-        except IOError:
-            rospy.logerr("cannot write to " + devfile)
+        if is_enable:
+            try:
+                with open(devfile, 'r') as f:
+                    data = f.readline().split()
+                    data = [ int(e) for e in data ]
+                    d = LightSensorValues()
+                    d.right_forward = data[0]
+                    d.right_side = data[1]
+                    d.left_side = data[2]
+                    d.left_forward = data[3]
+                    d.sum_all = sum(data)
+                    d.sum_forward = data[0] + data[3]
+                    pub.publish(d)
+            except IOError:
+                rospy.logerr("cannot write to " + devfile)
         
+        is_enable = rospy.get_param("lightsensors_enable", True)
         f = get_freq()
         if f != freq:
             freq = f
